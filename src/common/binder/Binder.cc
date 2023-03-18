@@ -18,12 +18,22 @@
 
 #include "corenetwork/statsCollector/BaseStationStatsCollector.h"
 #include "corenetwork/statsCollector/UeStatsCollector.h"
-
+#include <inet/networklayer/configurator/ipv4/Ipv4NetworkConfigurator.h>
 using namespace std;
 using namespace inet;
 
 Define_Module(Binder);
 
+void Binder::registerUeConnectedEthernetDevices(){
+    Ipv4Address modemEthDevice("10.0.0.34");
+    //Ipv4NetworkConfigurator* configurator = check_and_cast<Ipv4NetworkConfigurator*>(getModuleByPath("configurator"));
+    //IInterfaceTable *interfaceTable =  configurator->findInterfaceTableOf(getParentModule()->getParentModule());
+    ueEthernetConnectedDevices.push_back(modemEthDevice);
+
+}
+std::vector<inet::Ipv4Address> Binder::getUeConnectedEthernetDevices(){
+    return ueEthernetConnectedDevices;
+}
 void Binder::registerCarrier(double carrierFrequency, unsigned int carrierNumBands, unsigned int numerologyIndex, bool useTdd, unsigned int tddNumSymbolsDl, unsigned int tddNumSymbolsUl)
 {
     CarrierInfoMap::iterator it = componentCarriers_.find(carrierFrequency);
@@ -268,12 +278,14 @@ void Binder::initialize(int stage)
     if (stage == inet::INITSTAGE_LOCAL)
         phyPisaData.setBlerShift(par("blerShift"));
 
+
     if (stage == inet::INITSTAGE_LAST)
     {
         maxDataRatePerRb_ = par("maxDataRatePerRb");
 
         // if avg interference enabled, compute CQIs
         computeAverageCqiForBackgroundUes();
+        registerUeConnectedEthernetDevices();
     }
 
 }

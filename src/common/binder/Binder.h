@@ -14,7 +14,7 @@
 
 #include <omnetpp.h>
 #include <string>
-
+#include <vector>
 #include <inet/networklayer/contract/ipv4/Ipv4Address.h>
 #include <inet/networklayer/common/L3Address.h>
 #include "common/LteCommon.h"
@@ -139,6 +139,8 @@ class Binder : public omnetpp::cSimpleModule
     // store the id of the UEs that are performing handover
     std::set<MacNodeId> ueHandoverTriggered_;
     std::map<MacNodeId, std::pair<MacNodeId, MacNodeId> > handoverTriggered_;
+    //Store the ip of the devices connected to the UE over ethernet gate
+    std::vector<inet::Ipv4Address>ueEthernetConnectedDevices;
   protected:
     virtual void initialize(int stages) override;
     virtual int numInitStages() const override { return inet::NUM_INIT_STAGES; }
@@ -148,6 +150,7 @@ class Binder : public omnetpp::cSimpleModule
     virtual void finish() override;
 
   public:
+
     Binder()
     {
         macNodeIdCounter_[0] = ENB_MIN_ID;
@@ -183,7 +186,14 @@ class Binder : public omnetpp::cSimpleModule
             delete (*it);
         ueList_.clear();
     }
-
+    /**
+     * Adds UE Connected Ethernet Devices
+     */
+    void registerUeConnectedEthernetDevices();
+    /**
+     * Gets UE Connected Ethernet Devices
+     */
+    std::vector<inet::Ipv4Address> getUeConnectedEthernetDevices();
     /**
      * Registers a carrier to the global Binder module
      */

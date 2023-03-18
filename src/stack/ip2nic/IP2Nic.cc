@@ -287,9 +287,26 @@ void IP2Nic::fromIpBs(Packet * pkt)
     // TODO Add support to Ipv6
     auto ipHeader = pkt->peekAtFront<Ipv4Header>();
     const Ipv4Address& destAddr = ipHeader->getDestAddress();
+    MacNodeId destId;
 
-    // handle "forwarding" of packets during handover
-    MacNodeId destId = binder_->getMacNodeId(destAddr);
+    //Handle devices outside the cellular network
+    std::vector<inet::Ipv4Address> UeEthDevice = binder_->getUeConnectedEthernetDevices();
+
+    for (int i=0;i<UeEthDevice.size();++i){
+            if (destAddr.str() == UeEthDevice[i].str()){
+                EV<<"UeEthernetDeviceFound!!!!!"<<endl;
+                Ipv4Address ueDefault("10.0.0.19");
+                destId = binder_->getMacNodeId(ueDefault);
+
+            }
+            else{
+                // handle "forwarding" of packets during handover
+                destId = binder_->getMacNodeId(destAddr);
+            }
+
+        }
+
+
     if (hoForwarding_.find(destId) != hoForwarding_.end())
     {
         // data packet must be forwarded (via X2) to another eNB
@@ -336,6 +353,15 @@ void IP2Nic::toStackBs(Packet* pkt)
     short int tos = ipHeader->getTypeOfService();
     int headerSize = ipHeader->getHeaderLength().get();
 
+    std::vector<inet::Ipv4Address> UeEthDevice = binder_->getUeConnectedEthernetDevices();
+    for (int i=0;i<UeEthDevice.size();++i){
+       if (destAddr.str() == UeEthDevice[i].str()){
+           EV<<"UeEthernetDeviceFound!!!!!"<<endl;
+           Ipv4Address ueDefault("10.0.0.19");
+            destAddr = ueDefault;
+
+     }
+    }
     switch(transportProtocol)
     {
         case IP_PROT_TCP: {

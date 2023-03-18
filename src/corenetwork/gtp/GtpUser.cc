@@ -195,6 +195,7 @@ void GtpUser::handleFromTrafficFlowFilter(Packet * datagram)
         }
         else  // send to a BS
         {
+            EV<<"Flowww Id is"<<flowId<<endl;
             // check if the destination is within the same core network
 
 
