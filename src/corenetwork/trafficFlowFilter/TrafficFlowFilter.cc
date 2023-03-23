@@ -128,13 +128,10 @@ void TrafficFlowFilter::handleMessage(cMessage *msg)
     TrafficFlowTemplateId tftId = findTrafficFlow(srcAddr, destAddr);   // search for the tftId in the binder
 
     //Handle devices outside the cellular network
-    std::vector<inet::Ipv4Address> UeEthDevice = binder_->getUeConnectedEthernetDevices();
-    for (int i=0;i<UeEthDevice.size();++i){
-        if (destAddr.str() == UeEthDevice[i].str()){
-            EV<<"UeEthernetDeviceFound!!!!!"<<endl;
-            tftId = 1;
-        }
+    if (tftId==-1 || tftId == -2){
+        tftId = qosHandler.qosHandlerUpf(destAddr);
     }
+
     // add control info to the normal ip datagram. This info will be read by the GTP-U application
     auto tftInfo = pkt->addTag<TftControlInfo>();
     tftInfo->setTft(tftId);

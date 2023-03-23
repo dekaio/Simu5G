@@ -15,7 +15,7 @@
 #include <omnetpp.h>
 #include "corenetwork/trafficFlowFilter/TftControlInfo_m.h"
 #include "common/binder/Binder.h"
-
+#include "stack/sdap/qosHandlers.h"
 /**
  * Objective of the Traffic Flow Filter is mapping IP 4-Tuples to TFT identifiers. This commonly means identifying a bearer and
  * associating it to an ID that will be recognized by the first GTP-U entity
@@ -57,7 +57,7 @@ class TrafficFlowFilter : public omnetpp::cSimpleModule
     // for emulation when the MEC host is directly connected to the BS
     inet::L3Address meAppsExtAddress_;
     int meAppsExtAddressMask_;
-
+    QosHandler qosHandler;
 
   protected:
     virtual int numInitStages() const override{ return inet::INITSTAGE_LAST+1; }
