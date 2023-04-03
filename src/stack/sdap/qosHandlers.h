@@ -13,6 +13,7 @@
 #include "common/LteControlInfo.h"
 #include "common/binder/Binder.h"
 #include <inet/networklayer/ipv4/Ipv4Header_m.h>
+#include <map>;
 
 using namespace omnetpp;
 
@@ -42,9 +43,14 @@ class QosHandler{
     // reference to the LTE Binder module
         Binder* binder_;
 public:
+    std::map<int, std::array<int,5>> pcpToQfi = {
+            {1, {2,3,4}},
+            {2, {5,6,7}},
+            {3, {8,9,10}}
+    };
     QosHandler();
-    void pcpToQfi();
-    void qfiToPcp();
+    void convertPcpToQfi();
+    void convertQfiToPcp();
     TrafficFlowTemplateId qosHandlerUpf(const inet::Ipv4Address &destAddr);
     TrafficFlowTemplateId qosHandlergnb(const inet::Ipv4Address &destAddr);
     TrafficFlowTemplateId qosHandlerUe(const inet::Ipv4Address &destAddr);

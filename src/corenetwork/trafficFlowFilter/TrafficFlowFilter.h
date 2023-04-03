@@ -16,6 +16,7 @@
 #include "corenetwork/trafficFlowFilter/TftControlInfo_m.h"
 #include "common/binder/Binder.h"
 #include "stack/sdap/qosHandlers.h"
+
 /**
  * Objective of the Traffic Flow Filter is mapping IP 4-Tuples to TFT identifiers. This commonly means identifying a bearer and
  * associating it to an ID that will be recognized by the first GTP-U entity
@@ -59,15 +60,19 @@ class TrafficFlowFilter : public omnetpp::cSimpleModule
     int meAppsExtAddressMask_;
     QosHandler qosHandler;
 
+    //cXMLElement qosConfig = "";
+
   protected:
     virtual int numInitStages() const override{ return inet::INITSTAGE_LAST+1; }
     virtual void initialize(int stage) override;
 
     // TrafficFlowFilter module may receive messages only from the input interface of its compound module
     virtual void handleMessage(omnetpp::cMessage *msg) override;
-
+    void getQoSMapParametersFromXml();
     // functions for managing filter tables
     TrafficFlowTemplateId findTrafficFlow(inet::L3Address srcAddress, inet::L3Address destAddress);
+
 };
+
 
 #endif

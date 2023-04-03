@@ -141,6 +141,9 @@ void GtpUser::handleFromTrafficFlowFilter(Packet * datagram)
      *    4b) the UE is inside another network
      *        --> tunnel the packet towards the CN gateway
      */
+    //TSN Handling
+    int convertedQfi = convertPcpToQfi(datagram);
+
 
     auto tftInfo = datagram->removeTag<TftControlInfo>();
     TrafficFlowTemplateId flowId = tftInfo->getTft();
@@ -170,6 +173,10 @@ void GtpUser::handleFromTrafficFlowFilter(Packet * datagram)
         // create a new GtpUserMessage and encapsulate the datagram within the GtpUserMessage
         auto header = makeShared<GtpUserMsg>();
         header->setTeid(0);
+
+        //TSN
+        header->setQfi(convertedQfi);
+
         header->setChunkLength(B(8));
         auto gtpPacket = new Packet(datagram->getName());
         gtpPacket->insertAtFront(header);
@@ -301,4 +308,30 @@ void GtpUser::handleFromUdp(Packet * pkt)
         EV << "GtpUser::handleFromUdp - Sending datagram outside the radio network, destination[" << destAddr.str() << "]" << endl;
         send(originalPacket,"pppGate");
     }
+}
+
+int GtpUser::convertPcpToQfi(Packet *datagram){
+    EV<<"Packets name is"<<datagram->getName()<<endl;
+    std::string pcp1 = "video-0";
+    std::string pcp2 = "best effort-0";
+    try{
+        if (pcp1.find(datagram->getName()) == 0){
+                   return 5;
+            }
+        else if (pcp2.find(datagram->getName()) == 0 ){
+            return 7;
+        }
+        else {
+            return 0;
+        }
+    }
+    catch (...){
+        return 0;
+    }
+
+
+
+}
+int GtpUser::convertQfiToPcp(Packet *datagram){
+
 }

@@ -22,6 +22,7 @@
 #include <inet/networklayer/common/L3AddressResolver.h>
 #include "common/binder/Binder.h"
 #include <inet/linklayer/common/InterfaceTag_m.h>
+#include "stack/sdap/qosHandlers.h"
 
 /**
  * GtpUser is used for building data tunnels between GTP peers.
@@ -54,6 +55,9 @@ class GtpUser : public omnetpp::cSimpleModule
 
     inet::NetworkInterface* ie_;
 
+    //TSN handling
+    QosHandler qosHandler;
+
   protected:
 
     virtual int numInitStages() const override { return inet::NUM_INIT_STAGES; }
@@ -68,6 +72,10 @@ class GtpUser : public omnetpp::cSimpleModule
 
     // detect outgoing interface name (CellularNic)
     inet::NetworkInterface *detectInterface();
+
+    //TSN QoS handling
+    int convertPcpToQfi(inet::Packet *datagram);
+    int convertQfiToPcp(inet::Packet *datagram);
 };
 
 #endif

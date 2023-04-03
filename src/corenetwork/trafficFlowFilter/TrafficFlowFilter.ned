@@ -18,6 +18,7 @@ simple TrafficFlowFilter
 
         string ownerType; // must be one between ENODEB or GW
         bool fastForwarding = default(true);
+        
     gates:
         input internetFilterGateIn;
         output gtpUserGateOut;    

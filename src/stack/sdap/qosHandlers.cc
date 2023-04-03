@@ -18,10 +18,11 @@ QosHandler::QosHandler(){
      binder_ = getBinder();
 }
 
-void QosHandler::pcpToQfi(){
+void QosHandler::convertPcpToQfi(){
+
 
 }
-void QosHandler::qfiToPcp(){
+void QosHandler::convertQfiToPcp(){
 
 }
 TrafficFlowTemplateId QosHandler::qosHandlerUpf(const inet::Ipv4Address &destAddr){
