@@ -31,6 +31,7 @@
 #include "stack/mac/layer/LteMacBase.h"
 #include "common/binder/Binder.h"
 #include "common/cellInfo/CellInfo.h"
+#include "corenetwork/gtp/GtpUser.h"
 
 using namespace std;
 using namespace inet;
@@ -279,6 +280,14 @@ void IP2Nic::fromIpBs(Packet * pkt)
     EV << "IP2Nic::fromIpBs - message from IP layer: send to stack" << endl;
     // Remove control info from IP datagram
     pkt->removeTagIfPresent<SocketInd>();
+
+    //Get control information
+    //const auto& gtpHdr = pkt->peekAtFront<GtpUserMsg>();
+    //auto qfi = gtpHdr->getQfi();
+
+    //auto chunk = pkt->peekAtFront<Chunk>();
+    //const auto& qHeader = dynamicPtrCast<const GtpUserMsg>(chunk);
+
     removeAllSimu5GTags(pkt);
 
     // Remove InterfaceReq Tag (we already are on an interface now)

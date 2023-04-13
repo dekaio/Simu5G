@@ -22,7 +22,7 @@
 #include "inet/networklayer/common/L3AddressResolver.h"
 #include "inet/networklayer/common/NetworkInterface.h"
 #include "inet/protocolelement/redundancy/StreamTag_m.h"
-
+#include "inet/linklayer/ieee8021q/Ieee8021qTagHeader_m.h"
 
 Define_Module(TrafficFlowFilter);
 
@@ -94,8 +94,15 @@ void TrafficFlowFilter::initialize(int stage)
 
     // register service processing IP-packets on the LTE Uu Link
     auto gateIn = gate("internetFilterGateIn");
-    registerProtocol(LteProtocol::ipv4uu, gateIn, SP_INDICATION);
+    //if (isUpf(ownerType_)){
+
+    //}
+    //else{
+        registerProtocol(LteProtocol::ipv4uu, gateIn, SP_INDICATION);
     registerProtocol(LteProtocol::ipv4uu, gateIn, SP_CONFIRM);
+    //registerProtocol(inet::Protocol::ethernetMac, gateIn, SP_INDICATION);
+    //registerProtocol(inet::Protocol::ethernetMac, gateIn, SP_CONFIRM);
+//}
 }
 
 CoreNodeType TrafficFlowFilter::selectOwnerType(const char * type)
@@ -138,23 +145,33 @@ void TrafficFlowFilter::handleMessage(cMessage *msg)
 
     //TSN Ethernet Frame Handling
     EV<<"TrafficFlowFilter::handleMessage - Doing QoS mapping!!!"<<endl;
-    //1. Get the PCP value
-    //const auto &frame = pkt->peekAtFront<EthernetMacHeader>();
-    //2. Get the vlan Frame
-    auto vlanInd = pkt->findTag<VlanInd>();
-    EV<<"VlanInd is"<<vlanInd<<endl;
+    auto chunk = pkt->peekAtFront<Chunk>();
+    const auto& qHeader = dynamicPtrCast<const Ieee8021qTagEpdHeader>(chunk);
+    if (dynamicPtrCast<const Ieee8021qTagEpdHeader>(chunk)){
+            const auto& qHeader = dynamicPtrCast<const Ieee8021qTagEpdHeader>(chunk);
+            auto vlanId = qHeader->getVid();
+            auto pcpReq = pkt->findTag<PcpReq>();
+            auto pcpInd = pcpReq->getPcp();
+            //1. Get the PCP value
+            //const auto &frame = pkt->peekAtFront<EthernetMacHeader>();
+            //2. Get the vlan Frame
+            //auto vlanInd = pkt->findTag<VlanInd>();
+            EV<<"VlanInd is"<<vlanId<<endl;
 
-   // const auto & macAddressInd = pkt->findTag<MacAddressInd>();
-   //EV<<"MacAddressInd is "<<macAddressInd<<endl;
-    const auto & pcpInd = pkt->findTag<PcpInd>();
-    EV<<"PCP Ind is "<<pcpInd<<endl;
+           // const auto & macAddressInd = pkt->findTag<MacAddressInd>();
+           //EV<<"MacAddressInd is "<<macAddressInd<<endl;
+            //const auto & pcpInd = pkt->findTag<PcpInd>();
+            EV<<"PCP Ind is "<<pcpInd<<endl;
 
-    EV <<"Packets name is"<<pkt->getName()<<endl;
-    //EV<<"VLAN IND is"<<vlanInd<<endl;
+            EV <<"Packets name is"<<pkt->getName()<<endl;
+            //EV<<"VLAN IND is"<<vlanInd<<endl;
 
 
-    //const auto & interfaceInd = pkt->findTag<InterfaceInd>();
-    //EV<<"InterfaceINd is "<<interfaceInd<<endl;
+            //const auto & interfaceInd = pkt->findTag<InterfaceInd>();
+            //EV<<"InterfaceINd is "<<interfaceInd<<endl;
+
+    }
+
 
 
     // TODO check for source and dest port number
@@ -169,6 +186,7 @@ void TrafficFlowFilter::handleMessage(cMessage *msg)
     if (tftId==-1 || tftId == -2){
         tftId = qosHandler.qosHandlerUpf(destAddr);
     }
+
 
     // add control info to the normal ip datagram. This info will be read by the GTP-U application
     auto tftInfo = pkt->addTag<TftControlInfo>();
@@ -258,35 +276,5 @@ TrafficFlowTemplateId TrafficFlowFilter::findTrafficFlow(L3Address srcAddress, L
     EV << "Forward packet to BS " << destMaster << endl;
     return destMaster;
 }
-void TrafficFlowFilter::getQoSMapParametersFromXml(){
-    //Traverses the XML document and gets the delay/per/datarate values based on the PCP
 
-    cXMLElement* root = par("qosConfig");
-    std::string pcpval = "1";
-    cXMLElement* xmlInfo = root->
-                  getFirstChildWithAttribute("PCP", "val", pcpval.c_str());
-    std::string xmlDelayInfo = xmlInfo->
-                    getFirstChildWithAttribute("delayPar", "delay", 0)->
-                    getAttribute("delay");
-   std::string xmlPerInfo = xmlInfo->
-                getFirstChildWithAttribute("errorRatePar", "per", 0)->
-                getAttribute("per");
-   std::string xmlDatarateInfo = xmlInfo->
-                getFirstChildWithAttribute("dataratePar", "datarate", 0)->
-                getAttribute("datarate");
-   // Prints out the Values
-    EV << "PCPValue: "<< 1 << endl;
-    EV << "XMLInfo: " << " Delay: " << xmlDelayInfo << endl;
-    EV << "XMLInfo: " << " PER: " << xmlPerInfo << endl;
-    EV << "XMLInfo: " << " Datarate: " << xmlDatarateInfo << endl;
-    /*
-    xml  = parsim::cXMLUtils::parseFile("tsnQosMapper.xml");
-    if (xml == NULL){
-        EV <<"Failed to read QoS mapper XML file"<<endl;
-    }
-    else{
-        EV<<"Qos mapper XML file loading failed"<<endl;
-    }
-    */
-}
 

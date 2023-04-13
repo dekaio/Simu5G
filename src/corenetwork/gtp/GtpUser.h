@@ -76,6 +76,7 @@ class GtpUser : public omnetpp::cSimpleModule
     //TSN QoS handling
     int convertPcpToQfi(inet::Packet *datagram);
     int convertQfiToPcp(inet::Packet *datagram);
+    void getQoSMapParametersFromXml();
 };
 
 #endif

@@ -121,6 +121,7 @@ void LtePdcpRrcBase::headerDecompress(Packet* pkt)
 
 void LtePdcpRrcBase::setTrafficInformation(cPacket* pkt, inet::Ptr<FlowControlInfo> lteInfo)
 {
+
     if ((strcmp(pkt->getName(), "VoIP")) == 0)
     {
         lteInfo->setApplication(VOIP);
@@ -146,6 +147,8 @@ void LtePdcpRrcBase::setTrafficInformation(cPacket* pkt, inet::Ptr<FlowControlIn
         lteInfo->setTraffic(BACKGROUND);
         lteInfo->setRlcType((int) par("backgroundRlc"));
     }
+
+    //auto qfi =
 
     lteInfo->setDirection(getDirection());
 }

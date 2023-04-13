@@ -68,7 +68,7 @@ class TrafficFlowFilter : public omnetpp::cSimpleModule
 
     // TrafficFlowFilter module may receive messages only from the input interface of its compound module
     virtual void handleMessage(omnetpp::cMessage *msg) override;
-    void getQoSMapParametersFromXml();
+
     // functions for managing filter tables
     TrafficFlowTemplateId findTrafficFlow(inet::L3Address srcAddress, inet::L3Address destAddress);
 

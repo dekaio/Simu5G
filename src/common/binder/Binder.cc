@@ -26,9 +26,11 @@ Define_Module(Binder);
 
 void Binder::registerUeConnectedEthernetDevices(){
     Ipv4Address modemEthDevice("10.0.0.34");
+    Ipv4Address modemEthDevice1("10.0.0.18");
     //Ipv4NetworkConfigurator* configurator = check_and_cast<Ipv4NetworkConfigurator*>(getModuleByPath("configurator"));
     //IInterfaceTable *interfaceTable =  configurator->findInterfaceTableOf(getParentModule()->getParentModule());
     ueEthernetConnectedDevices.push_back(modemEthDevice);
+    ueEthernetConnectedDevices.push_back(modemEthDevice1);
 
 }
 std::vector<inet::Ipv4Address> Binder::getUeConnectedEthernetDevices(){
@@ -1362,4 +1364,10 @@ RanNodeType Binder::getBaseStationTypeById(MacNodeId cellId)
     }
 }
 
+int Binder::getCurrentPacketQfi(){
+    return this->currentPacketQfi;
+}
+void Binder::setCurrentPacketQfi(int qfi){
+    this->currentPacketQfi = qfi;
+}
 

@@ -43,11 +43,31 @@ class QosHandler{
     // reference to the LTE Binder module
         Binder* binder_;
 public:
-    std::map<int, std::array<int,5>> pcpToQfi = {
-            {1, {2,3,4}},
-            {2, {5,6,7}},
-            {3, {8,9,10}}
+    //std::map<std::string, std::array<int,5>> pcpToQfi;
+    std::map<std::string, int> pcpToQfi = {
+            {"best effort", 6},
+            {"audio", 1},
+            {"video", 2},
+            {"configuration", 3},
+            {"diagnostics", 3},
+            {"events", 3},
+            {"control", 82},
+            {"cyclic", 83},
+            {"isochronous", 82},
+            {"network control", 82}
     };
+    std::map<std::string, int> qfiToPcp = {
+                {"streaming", 6},
+                {"gaming", 1},
+                {"video", 2},
+                {"configuration", 3},
+                {"diagnostics", 3},
+                {"events", 3},
+                {"control", 82},
+                {"cyclic", 83},
+                {"isochronous", 82},
+                {"network control", 82}
+        };
     QosHandler();
     void convertPcpToQfi();
     void convertQfiToPcp();

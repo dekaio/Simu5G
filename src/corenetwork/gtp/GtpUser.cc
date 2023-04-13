@@ -16,7 +16,7 @@
 #include <inet/common/packet/printer/PacketPrinter.h>
 #include <inet/common/socket/SocketTag_m.h>
 #include <inet/linklayer/common/InterfaceTag_m.h>
-
+#include "stack/sdap/qosHandlers.h"
 Define_Module(GtpUser);
 
 using namespace omnetpp;
@@ -88,6 +88,8 @@ CoreNodeType GtpUser::selectOwnerType(const char * type)
     else if(strcmp(type,"PGW") == 0)
         return PGW;
     else if(strcmp(type,"UPF") == 0)
+        return UPF;
+    else if(strcmp(type,"Nwtt3") == 0)
         return UPF;
     else if(strcmp(type, "UPF_MEC") == 0)
         return UPF_MEC;
@@ -242,6 +244,7 @@ void GtpUser::handleFromUdp(Packet * pkt)
     // re-create the original IP datagram and send it to the local network
     auto originalPacket = new Packet (pkt->getName());
     auto gtpUserMsg = pkt->popAtFront<GtpUserMsg>();
+    binder_->setCurrentPacketQfi(gtpUserMsg->getQfi());
     originalPacket->insertAtBack(pkt->peekData());
     originalPacket->addTagIfAbsent<PacketProtocolTag>()->setProtocol(&Protocol::ipv4);
     // remove any pending socket indications
@@ -312,26 +315,55 @@ void GtpUser::handleFromUdp(Packet * pkt)
 
 int GtpUser::convertPcpToQfi(Packet *datagram){
     EV<<"Packets name is"<<datagram->getName()<<endl;
-    std::string pcp1 = "video-0";
-    std::string pcp2 = "best effort-0";
-    try{
-        if (pcp1.find(datagram->getName()) == 0){
-                   return 5;
-            }
-        else if (pcp2.find(datagram->getName()) == 0 ){
-            return 7;
+    std::string packetName = datagram->getName();
+    size_t found = -1;
+    for (const auto& pair:qosHandler.pcpToQfi){
+        found = packetName.find(pair.first);
+        //EV<<"pair.first is"<<pair.first<<endl;
+        if (found != std::string::npos){
+            //EV<<"Substring found at position"<<found<<std::endl;
+            return pair.second;
         }
-        else {
-            return 0;
+        else{
+            //EV<<"Substring not found"<<std::endl;
         }
     }
-    catch (...){
-        return 0;
-    }
+    return -1;
 
 
 
 }
 int GtpUser::convertQfiToPcp(Packet *datagram){
+    return 0;
+}
+void GtpUser::getQoSMapParametersFromXml(){
+    //Traverses the XML document and gets the delay/per/datarate values based on the PCP
 
+    cXMLElement* root = par("pcpQfiProfile");
+    std::string pcpval = "1";
+    cXMLElement* xmlInfo = root->
+                  getFirstChildWithAttribute("PCP", "id", pcpval.c_str());
+    std::string xmlDelayInfo = xmlInfo->
+                    getFirstChildWithAttribute("delayPar", "delay", 0)->
+                    getAttribute("delay");
+   std::string xmlPerInfo = xmlInfo->
+                getFirstChildWithAttribute("errorRatePar", "per", 0)->
+                getAttribute("per");
+   std::string xmlDatarateInfo = xmlInfo->
+                getFirstChildWithAttribute("dataratePar", "datarate", 0)->
+                getAttribute("datarate");
+   // Prints out the Values
+    EV << "PCPValue: "<< 1 << endl;
+    EV << "XMLInfo: " << " Delay: " << xmlDelayInfo << endl;
+    EV << "XMLInfo: " << " PER: " << xmlPerInfo << endl;
+    EV << "XMLInfo: " << " Datarate: " << xmlDatarateInfo << endl;
+    /*
+    xml  = parsim::cXMLUtils::parseFile("tsnQosMapper.xml");
+    if (xml == NULL){
+        EV <<"Failed to read QoS mapper XML file"<<endl;
+    }
+    else{
+        EV<<"Qos mapper XML file loading failed"<<endl;
+    }
+    */
 }

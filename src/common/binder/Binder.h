@@ -139,8 +139,10 @@ class Binder : public omnetpp::cSimpleModule
     // store the id of the UEs that are performing handover
     std::set<MacNodeId> ueHandoverTriggered_;
     std::map<MacNodeId, std::pair<MacNodeId, MacNodeId> > handoverTriggered_;
+
     //Store the ip of the devices connected to the UE over ethernet gate
     std::vector<inet::Ipv4Address>ueEthernetConnectedDevices;
+    int currentPacketQfi;
   protected:
     virtual void initialize(int stages) override;
     virtual int numInitStages() const override { return inet::NUM_INIT_STAGES; }
@@ -636,6 +638,9 @@ class Binder : public omnetpp::cSimpleModule
     void moveUeCollector(MacNodeId ue, MacCellId oldCell, MacCellId newCell);
 
     RanNodeType getBaseStationTypeById(MacNodeId);
+
+    int getCurrentPacketQfi();
+    void setCurrentPacketQfi(int qfi);
 
 
 };
