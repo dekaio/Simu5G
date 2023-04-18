@@ -17,6 +17,8 @@
 #include <inet/common/socket/SocketTag_m.h>
 #include <inet/linklayer/common/InterfaceTag_m.h>
 #include "stack/sdap/qosHandlers.h"
+#include "inet/linklayer/ieee8021q/Ieee8021qTagHeader_m.h"
+#include "inet/linklayer/common/PcpTag_m.h"
 Define_Module(GtpUser);
 
 using namespace omnetpp;
@@ -241,10 +243,21 @@ void GtpUser::handleFromUdp(Packet * pkt)
 
     EV << "GtpUser::handleFromUdp - Decapsulating and forwarding to the correct destination" << endl;
 
+
+
+
     // re-create the original IP datagram and send it to the local network
     auto originalPacket = new Packet (pkt->getName());
     auto gtpUserMsg = pkt->popAtFront<GtpUserMsg>();
     binder_->setCurrentPacketQfi(gtpUserMsg->getQfi());
+    /*
+    //TSN Handling
+        auto tsnHeader = makeShared<Ieee8021qTagEpdHeader>();
+         int pcp = convertQfiToPcp(originalPacket);
+         tsnHeader->setPcp(pcp);
+         originalPacket->addTagIfAbsent<PcpInd>()->setPcp(pcp);
+         originalPacket->insertAtFront(tsnHeader);
+         */
     originalPacket->insertAtBack(pkt->peekData());
     originalPacket->addTagIfAbsent<PacketProtocolTag>()->setProtocol(&Protocol::ipv4);
     // remove any pending socket indications
@@ -254,6 +267,9 @@ void GtpUser::handleFromUdp(Packet * pkt)
 
     const auto& hdr = originalPacket->peekAtFront<Ipv4Header>();
     const Ipv4Address& destAddr = hdr->getDestAddress();
+
+
+
 
     if (isBaseStation(ownerType_))
     {
@@ -334,7 +350,22 @@ int GtpUser::convertPcpToQfi(Packet *datagram){
 
 }
 int GtpUser::convertQfiToPcp(Packet *datagram){
-    return 0;
+    EV<<"Packets name is"<<datagram->getName()<<endl;
+        std::string packetName = datagram->getName();
+        size_t found = -1;
+        for (const auto& pair:qosHandler.qfiToPcp){
+            found = packetName.find(pair.first);
+            //EV<<"pair.first is"<<pair.first<<endl;
+            if (found != std::string::npos){
+                //EV<<"Substring found at position"<<found<<std::endl;
+                return pair.second;
+            }
+            else{
+                //EV<<"Substring not found"<<std::endl;
+            }
+        }
+        return -1;
+
 }
 void GtpUser::getQoSMapParametersFromXml(){
     //Traverses the XML document and gets the delay/per/datarate values based on the PCP

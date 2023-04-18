@@ -57,16 +57,16 @@ public:
             {"network control", 82}
     };
     std::map<std::string, int> qfiToPcp = {
-                {"streaming", 6},
-                {"gaming", 1},
-                {"video", 2},
-                {"configuration", 3},
-                {"diagnostics", 3},
-                {"events", 3},
-                {"control", 82},
-                {"cyclic", 83},
-                {"isochronous", 82},
-                {"network control", 82}
+            {"best effort", 0},
+            {"audio", 1},
+            {"video", 1},
+            {"configuration", 2},
+            {"diagnostics", 3},
+            {"events", 4},
+            {"control", 5},
+            {"cyclic", 6},
+            {"isochronous", 7},
+            {"network control", 8}
         };
     QosHandler();
     void convertPcpToQfi();
