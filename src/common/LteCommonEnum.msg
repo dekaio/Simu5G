@@ -93,6 +93,8 @@ enum ApplicationType
     GAMING = 5;
     FULLBUFFER = 6;
     UNKNOWN_APP = 7;
+    V2X = 8;
+    DATA_FLOW = 9;
 };
 
 

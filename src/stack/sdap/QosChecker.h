@@ -39,7 +39,7 @@ struct FiveQI{
     signed int daw;
 };
 
-class QosHandler{
+class QosChecker{
     // reference to the LTE Binder module
         Binder* binder_;
 public:
@@ -68,12 +68,12 @@ public:
             {"isochronous", 7},
             {"network control", 8}
         };
-    QosHandler();
+    QosChecker();
     void convertPcpToQfi();
     void convertQfiToPcp();
-    TrafficFlowTemplateId qosHandlerUpf(const inet::Ipv4Address &destAddr);
-    TrafficFlowTemplateId qosHandlergnb(const inet::Ipv4Address &destAddr);
-    TrafficFlowTemplateId qosHandlerUe(const inet::Ipv4Address &destAddr);
+    TrafficFlowTemplateId qosCheckerUpf(const inet::Ipv4Address &destAddr);
+    TrafficFlowTemplateId qosCheckerGnb(const inet::Ipv4Address &destAddr);
+    TrafficFlowTemplateId qosCheckerUe(const inet::Ipv4Address &destAddr);
 
 };
 

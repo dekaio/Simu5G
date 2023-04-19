@@ -19,7 +19,7 @@
 #include "inet/transportlayer/udp/UdpHeader_m.h"
 
 #include "stack/packetFlowManager/PacketFlowManagerBase.h"
-
+#include "stack/sdap/utils/QosHandler.h"
 
 Define_Module(LtePdcpRrcUe);
 Define_Module(LtePdcpRrcEnb);
@@ -127,12 +127,16 @@ void LtePdcpRrcBase::setTrafficInformation(cPacket* pkt, inet::Ptr<FlowControlIn
         lteInfo->setApplication(VOIP);
         lteInfo->setTraffic(CONVERSATIONAL);
         lteInfo->setRlcType((int) par("conversationalRlc"));
+        lteInfo->setQfi(qosHandler->getQfi(VOIP));
+        lteInfo->setRadioBearerId(qosHandler->getRadioBearerId(lteInfo->getQfi()));
     }
     else if ((strcmp(pkt->getName(), "gaming")) == 0)
     {
         lteInfo->setApplication(GAMING);
         lteInfo->setTraffic(INTERACTIVE);
         lteInfo->setRlcType((int) par("interactiveRlc"));
+        lteInfo->setQfi(qosHandler->getQfi(DATA_FLOW));
+        lteInfo->setRadioBearerId(qosHandler->getRadioBearerId(lteInfo->getQfi()));
     }
     else if ((strcmp(pkt->getName(), "VoDPacket") == 0)
         || (strcmp(pkt->getName(), "VoDFinishPacket") == 0))
@@ -140,12 +144,19 @@ void LtePdcpRrcBase::setTrafficInformation(cPacket* pkt, inet::Ptr<FlowControlIn
         lteInfo->setApplication(VOD);
         lteInfo->setTraffic(STREAMING);
         lteInfo->setRlcType((int) par("streamingRlc"));
+        lteInfo->setQfi(qosHandler->getQfi(VOD));
+        lteInfo->setRadioBearerId(qosHandler->getRadioBearerId(lteInfo->getQfi()));
     }
     else
     {
         lteInfo->setApplication(CBR);
         lteInfo->setTraffic(BACKGROUND);
         lteInfo->setRlcType((int) par("backgroundRlc"));
+        auto qfi = qosHandler->getQfi(DATA_FLOW);
+
+
+        lteInfo->setQfi(qosHandler->getQfi(DATA_FLOW));
+        lteInfo->setRadioBearerId(qosHandler->getRadioBearerId(lteInfo->getQfi()));
     }
 
     //auto qfi =
@@ -375,6 +386,29 @@ void LtePdcpRrcBase::initialize(int stage)
             EV << "LtePdcpRrcBase::initialize - NRpacketFlowManager present" << endl;
             NRpacketFlowManager_ = check_and_cast<PacketFlowManagerBase *> (getParentModule()->getSubmodule("nrPacketFlowManager"));
         }
+        if(getParentModule()->findSubmodule("qosHandlerGnb")!= -1)
+        {
+            EV << "LtePdcpRrcBase::initialize - QosHandlerGNB present" << endl;
+            try{
+               qosHandler = check_and_cast<QosHandlerGNB *> (getParentModule()->getSubmodule("qosHandlerGnb"));
+            }
+            catch(...){
+                //EV << "LtePdcpRrcBase::initialize - QosHandlerUE present" << endl;
+            }
+
+        }
+        if(getParentModule()->findSubmodule("qosHandler")!= -1)
+        {
+            try{
+                EV << "LtePdcpRrcBase::initialize - QosHandlerUE present" << endl;
+               qosHandler = check_and_cast<QosHandlerUE *> (getParentModule()->getSubmodule("qosHandlerUe"));
+            }
+            catch (...){
+                //EV << "LtePdcpRrcBase::initialize - QosHandlerGNB present" << endl;
+            }
+
+        }
+
 
 
 

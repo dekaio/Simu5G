@@ -184,7 +184,7 @@ void TrafficFlowFilter::handleMessage(cMessage *msg)
 
     //Handle devices outside the cellular network
     if (tftId==-1 || tftId == -2){
-        tftId = qosHandler.qosHandlerUpf(destAddr);
+        tftId = qosChecker.qosCheckerUpf(destAddr);
     }
 
 

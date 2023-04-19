@@ -16,7 +16,7 @@
 #include <inet/common/packet/printer/PacketPrinter.h>
 #include <inet/common/socket/SocketTag_m.h>
 #include <inet/linklayer/common/InterfaceTag_m.h>
-#include "stack/sdap/qosHandlers.h"
+#include "stack/sdap/QosChecker.h"
 #include "inet/linklayer/ieee8021q/Ieee8021qTagHeader_m.h"
 #include "inet/linklayer/common/PcpTag_m.h"
 Define_Module(GtpUser);
@@ -333,7 +333,7 @@ int GtpUser::convertPcpToQfi(Packet *datagram){
     EV<<"Packets name is"<<datagram->getName()<<endl;
     std::string packetName = datagram->getName();
     size_t found = -1;
-    for (const auto& pair:qosHandler.pcpToQfi){
+    for (const auto& pair:qosChecker.pcpToQfi){
         found = packetName.find(pair.first);
         //EV<<"pair.first is"<<pair.first<<endl;
         if (found != std::string::npos){
@@ -353,7 +353,7 @@ int GtpUser::convertQfiToPcp(Packet *datagram){
     EV<<"Packets name is"<<datagram->getName()<<endl;
         std::string packetName = datagram->getName();
         size_t found = -1;
-        for (const auto& pair:qosHandler.qfiToPcp){
+        for (const auto& pair:qosChecker.qfiToPcp){
             found = packetName.find(pair.first);
             //EV<<"pair.first is"<<pair.first<<endl;
             if (found != std::string::npos){

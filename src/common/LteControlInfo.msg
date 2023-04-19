@@ -61,6 +61,10 @@ class LteControlInfo extends inet::TagBase {
 
     unsigned short application enum(ApplicationType);    // Application Type
     unsigned short traffic enum(LteTrafficClass);        // Lte Traffic Type
+    
+    //# 5QI information
+    unsigned short qfi;
+    unsigned short radioBearerId;
 
     //# RLC Control Information
 

@@ -6,26 +6,26 @@
  */
 
 #include <iostream>
-#include "stack/sdap/qosHandlers.h"
+#include "stack/sdap/QosChecker.h"
 
 
 using namespace std;
 
 using namespace omnetpp;
 using namespace inet;
-QosHandler::QosHandler(){
+QosChecker::QosChecker(){
     // get reference to the binder
      binder_ = getBinder();
 }
 
-void QosHandler::convertPcpToQfi(){
+void QosChecker::convertPcpToQfi(){
 
 
 }
-void QosHandler::convertQfiToPcp(){
+void QosChecker::convertQfiToPcp(){
 
 }
-TrafficFlowTemplateId QosHandler::qosHandlerUpf(const inet::Ipv4Address &destAddr){
+TrafficFlowTemplateId QosChecker::qosCheckerUpf(const inet::Ipv4Address &destAddr){
     std::vector<inet::Ipv4Address> UeEthDevice = binder_->getUeConnectedEthernetDevices();
     int flag = 0;
     for (int i=0;i<UeEthDevice.size();++i){
@@ -39,7 +39,7 @@ TrafficFlowTemplateId QosHandler::qosHandlerUpf(const inet::Ipv4Address &destAdd
     if (flag == 0)
             return -1;
 }
-TrafficFlowTemplateId QosHandler::qosHandlergnb(const inet::Ipv4Address &destAddr){
+TrafficFlowTemplateId QosChecker::qosCheckerGnb(const inet::Ipv4Address &destAddr){
     std::vector<inet::Ipv4Address> UeEthDevice = binder_->getUeConnectedEthernetDevices();
             for (int i=0;i<UeEthDevice.size();++i){
                 if (destAddr.str() == UeEthDevice[i].str()){
@@ -49,6 +49,6 @@ TrafficFlowTemplateId QosHandler::qosHandlergnb(const inet::Ipv4Address &destAdd
                 }
             }
 }
-TrafficFlowTemplateId QosHandler::qosHandlerUe(const inet::Ipv4Address &destAddr){
+TrafficFlowTemplateId QosChecker::qosCheckerUe(const inet::Ipv4Address &destAddr){
 
 }

@@ -22,7 +22,7 @@
 #include <inet/networklayer/common/L3AddressResolver.h>
 #include "common/binder/Binder.h"
 #include <inet/linklayer/common/InterfaceTag_m.h>
-#include "stack/sdap/qosHandlers.h"
+#include "stack/sdap/QosChecker.h"
 
 /**
  * GtpUser is used for building data tunnels between GTP peers.
@@ -56,7 +56,7 @@ class GtpUser : public omnetpp::cSimpleModule
     inet::NetworkInterface* ie_;
 
     //TSN handling
-    QosHandler qosHandler;
+    QosChecker qosChecker;
 
   protected:
 
