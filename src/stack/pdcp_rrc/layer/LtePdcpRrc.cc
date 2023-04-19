@@ -397,7 +397,7 @@ void LtePdcpRrcBase::initialize(int stage)
             }
 
         }
-        if(getParentModule()->findSubmodule("qosHandler")!= -1)
+        if(getParentModule()->findSubmodule("qosHandlerUe")!= -1)
         {
             try{
                 EV << "LtePdcpRrcBase::initialize - QosHandlerUE present" << endl;
