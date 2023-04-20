@@ -62,10 +62,16 @@ class LteControlInfo extends inet::TagBase {
     unsigned short application enum(ApplicationType);    // Application Type
     unsigned short traffic enum(LteTrafficClass);        // Lte Traffic Type
     
-    //# 5QI information
+    //# 5G start
+    unsigned int cid;
     unsigned short qfi;
     unsigned short radioBearerId;
+    bool containsSeveralCids;
+    unsigned int bytesize; 
+    unsigned int numberOfPacketsInQueue;
+    unsigned int bytesizeOfOnePacket;    
 
+   //#5G end
     //# RLC Control Information
 
     unsigned short rlcType enum(LteRlcType);            // RLC Traffic Type
@@ -75,8 +81,13 @@ class LteControlInfo extends inet::TagBase {
     uint16 lcid;                                        // Logical Connection Identifier
     int32 multicastGroupId = -1;                        // Identifier for a multicast group (it is in range [0:[2^28)-1] ) 
                                                         // For unicast communications, this field is -1
-      
-                                                          
+                                                        
+   //# 5G for codeBlockGroups
+   bool codeBlockGroupsActivated;
+   unsigned int numberOfCodeBlockGroups;
+   unsigned int restByteSize;
+   unsigned int blocksForCodeBlockGroups;
+   unsigned int initialByteSize;
 }
 
 //
@@ -96,9 +107,12 @@ class FlowControlInfo extends LteControlInfo {
     uint32 srcAddr;                                       // source IP
     uint32 dstAddr;                                       // destination IP
     uint16 typeOfService;								  // IP Type Of Service
-    unsigned int sequenceNumber;                          // packet sequence number
+    
+	unsigned int sequenceNumber;                          // packet sequence number
     int headerSize;                                       // IP + Transport header size (used by pdcp ROHC)
     bool useNR = false;									  // flag for sending this packet using NR
+	uint16 srcPort;                                          // source port
+    uint16 dstPort;                                       // destination port
 }
 
 //

@@ -20,6 +20,7 @@ void NRPdcpRrcEnb::initialize(int stage)
     if (stage == inet::INITSTAGE_LOCAL)
     {
         dualConnectivityEnabled_ = getAncestorPar("dualConnectivityEnabled").boolValue();
+        qosHandler = check_and_cast<QosHandlerGNB*>(getParentModule()->getSubmodule("qosHandlerGnb"));
         if (!dualConnectivityEnabled_)
             dualConnectivityManager_ = NULL;
         else
